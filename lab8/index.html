@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформлення замовлення</title>
+</head>
+<body>
+    <h1>Оформлення замовлення</h1>
+    <form action="process_order.php" method="post">
+        <label for="order-number">Номер замовлення:</label>
+        <input type="text" id="order-number" name="order_number" required><br><br>
+        
+        <label for="weight">Вага замовлення (кг):</label>
+        <input type="number" id="weight" name="weight" step="0.01" required><br><br>
+        
+        <label for="city">Місто:</label>
+        <select id="city" name="city" required>
+            <?php
+            // Получение списка городов через API
+            $api_key = 'ВАШ_API_КЛЮЧ';
+            $data = [
+                "modelName" => "Address",
+                "calledMethod" => "getCities",
+                "apiKey" => $api_key
+            ];
+            $response = sendRequest($data);
+            if ($response && isset($response['data'])) {
+                foreach ($response['data'] as $city) {
+                    echo "<option value=\"{$city['Ref']}\">{$city['Description']}</option>";
+                }
+            } else {
+                echo "<option>Не вдалося завантажити міста</option>";
+            }
+            ?>
+        </select><br><br>
+        
+        <label for="delivery-method">Спосіб доставки:</label>
+        <select id="delivery-method" name="delivery_method" required>
+            <option value="branch">Відділення</option>
+            <option value="postamat">Поштомат</option>
+        </select><br><br>
+        
+        <label for="warehouse">Відділення/Поштомат:</label>
+        <select id="warehouse" name="warehouse" required>
+            <!-- Будет обновляться сервером -->
+        </select><br><br>
+        
+        <button type="submit">Оформити замовлення</button>
+    </form>
+</body>
+</html>
